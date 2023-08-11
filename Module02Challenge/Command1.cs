@@ -73,8 +73,6 @@ namespace Module02Challenge
             //method to get level
             Level myLevel = GetLevelByName(doc, "Level 1");
 
-
-
             //start transaction
             using (Transaction t = new Transaction(doc))
             {
