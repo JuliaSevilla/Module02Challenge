@@ -35,9 +35,11 @@ namespace Module02Challenge
 
             TaskDialog.Show("Test", "You selected " + pickList.Count.ToString() + " elements");
 
-
             //filter selected elements for model curves - each selected line becomes part of the list
             List<CurveElement> modelCurves = new List<CurveElement>();
+            // list of elements to delete
+            List<ElementId> linesToHide = new List<ElementId>();
+
             foreach (Element elem in pickList)
             {
                 if (elem is CurveElement)
@@ -49,8 +51,10 @@ namespace Module02Challenge
                     {
                         Curve currentCurve = curveElem.GeometryCurve;
 
+                        // skip arcs and circles
                         if (currentCurve.IsBound == false)
                         {
+                            linesToHide.Add(curveElem.Id); 
                             continue;
                         }
                         modelCurves.Add(curveElem);
@@ -73,6 +77,7 @@ namespace Module02Challenge
             //method to get level
             Level myLevel = GetLevelByName(doc, "Level 1");
 
+            
             //start transaction
             using (Transaction t = new Transaction(doc))
             {
@@ -99,124 +104,131 @@ namespace Module02Challenge
                         case "P-PIPE":
                             Pipe newPipe = Pipe.Create(doc, pipeSystemType.Id, pipeType1.Id, myLevel.Id, curCurve.GetEndPoint(0), curCurve.GetEndPoint(1));
                             break;
+                        default:
+                            linesToHide.Add(elem.Id);
+                            break;
                     }
-                    
+
                 }
+                //this methods only accepts elements Id and not elements. That is why our list is of
+                //ElementId instead of CurveElements
+                doc.ActiveView.HideElements(linesToHide);
+
                 t.Commit();
 
                 return Result.Succeeded;
             }
         }
 
-            private static Level GetLevelByName(Document doc, string levelName)
-            {
-                FilteredElementCollector levelCollector = new FilteredElementCollector(doc);
-                levelCollector.OfClass(typeof(Level));
-                levelCollector.WhereElementIsNotElementType();
+        private static Level GetLevelByName(Document doc, string levelName)
+        {
+            FilteredElementCollector levelCollector = new FilteredElementCollector(doc);
+            levelCollector.OfClass(typeof(Level));
+            levelCollector.WhereElementIsNotElementType();
 
-                foreach (Level curLevel in levelCollector)
+            foreach (Level curLevel in levelCollector)
+            {
+                if (curLevel.Name == levelName)
                 {
-                    if (curLevel.Name == levelName)
-                    {
                     return curLevel;
-                    }
+                }
+            }
+
+            return null;
+        }
+
+        //method to get wall type by name
+        internal WallType GetWallTypeByName(Document doc, string typeName)
+        {
+            FilteredElementCollector collector = new FilteredElementCollector(doc);
+            collector.OfClass(typeof(WallType));
+            //collector.WhereElementIsElementType();
+
+            foreach (WallType curType in collector)
+            {
+                if (curType.Name == typeName)
+                {
+                    return curType;
                 }
 
-                 return null;
             }
+            return null;
+        }
 
-            //method to get wall type by name
-            internal WallType GetWallTypeByName(Document doc, string typeName)
+        //method to get system type by name
+        internal PipeType GetPipeType(Document doc, string typeName)
+
+        {
+            FilteredElementCollector collector = new FilteredElementCollector(doc);
+            collector.OfClass(typeof(PipeType));
+            //collector.WhereElementIsElementType();
+
+            foreach (PipeType curType in collector)
             {
-                FilteredElementCollector collector = new FilteredElementCollector(doc);
-                collector.OfClass(typeof(WallType));
-                //collector.WhereElementIsElementType();
-
-                foreach (WallType curType in collector)
+                if (curType.Name == typeName)
                 {
-                    if (curType.Name == typeName)
-                    {
-                        return curType;
-                    }
-
+                    return curType;
                 }
-                return null;
             }
+            return null;
+        }
 
-            //method to get system type by name
-            internal PipeType GetPipeType(Document doc, string typeName)
+        internal DuctType GetDuctType(Document doc, string typeName)
+        {
+            FilteredElementCollector collector = new FilteredElementCollector(doc);
+            collector.OfClass(typeof(DuctType));
+            //collector.WhereElementIsElementType();
 
+            foreach (DuctType curType in collector)
             {
-                FilteredElementCollector collector = new FilteredElementCollector(doc);
-                collector.OfClass(typeof(PipeType));
-                //collector.WhereElementIsElementType();
-
-                foreach (PipeType curType in collector)
+                if (curType.Name == typeName)
                 {
-                    if (curType.Name == typeName)
-                    {
-                        return curType;
-                    }
+                    return curType;
                 }
-                return null;
             }
-             
-            internal DuctType GetDuctType(Document doc, string typeName)
-            {
-                FilteredElementCollector collector = new FilteredElementCollector(doc);
-                collector.OfClass(typeof(DuctType));
-                //collector.WhereElementIsElementType();
 
-                foreach (DuctType curType in collector)
+            return null;
+        }
+
+        internal MEPSystemType GetDuctSystemType(Document doc, string typeName)
+        {
+            FilteredElementCollector systemCollector = new FilteredElementCollector(doc);
+            systemCollector.OfClass(typeof(MEPSystemType));
+
+            foreach (MEPSystemType curType in systemCollector)
+            {
+                if (curType.Name == typeName)
                 {
-                    if (curType.Name == typeName)
-                    {
-                        return curType;
-                    }
+                    return curType;
                 }
-
-                return null;
             }
 
-            internal MEPSystemType GetDuctSystemType(Document doc, string typeName)
+            return null;
+        }
+
+        internal MEPSystemType GetPipeSystemType(Document doc, string typeName)
+        {
+            FilteredElementCollector systemCollector = new FilteredElementCollector(doc);
+            systemCollector.OfClass(typeof(MEPSystemType));
+
+            foreach (MEPSystemType curType in systemCollector)
             {
-                FilteredElementCollector systemCollector = new FilteredElementCollector(doc);
-                systemCollector.OfClass(typeof(MEPSystemType));
-                
-                foreach (MEPSystemType curType in systemCollector)
+                if (curType.Name == typeName)
                 {
-                     if (curType.Name == typeName)
-                     {
-                        return curType;
-                     }
-                 }
-
-                  return null;
+                    return curType;
+                }
             }
 
-            internal MEPSystemType GetPipeSystemType(Document doc, string typeName)
-            {
-                 FilteredElementCollector systemCollector = new FilteredElementCollector(doc);
-                 systemCollector.OfClass(typeof(MEPSystemType)); 
-                 
-                 foreach (MEPSystemType curType in systemCollector)
-                 {
-                    if (curType.Name == typeName)
-                    {
-                        return curType;
-                     }
-                 }
-
-                  return null;
-            }
+            return null;
+        }
 
 
 
-            public static String GetMethod()
-            {
+        public static String GetMethod()
+        {
             var method = MethodBase.GetCurrentMethod().DeclaringType?.FullName;
             return method;
-             }
+        }
     }
 }
 
