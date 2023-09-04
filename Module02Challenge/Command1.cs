@@ -1,20 +1,11 @@
-#region Namespaces
-using Autodesk.Revit.ApplicationServices;
 using Autodesk.Revit.Attributes;
-using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Mechanical;
 using Autodesk.Revit.DB.Plumbing;
+using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
-using Autodesk.Revit.UI.Selection;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Net;
 using System.Reflection;
-using System.Security.Cryptography;
-using System.Windows.Controls;
-
-#endregion
+using System;
 
 namespace Module02Challenge
 {
@@ -54,7 +45,7 @@ namespace Module02Challenge
                         // skip arcs and circles
                         if (currentCurve.IsBound == false)
                         {
-                            linesToHide.Add(curveElem.Id); 
+                            linesToHide.Add(curveElem.Id);
                             continue;
                         }
                         modelCurves.Add(curveElem);
@@ -77,7 +68,7 @@ namespace Module02Challenge
             //method to get level
             Level myLevel = GetLevelByName(doc, "Level 1");
 
-            
+
             //start transaction
             using (Transaction t = new Transaction(doc))
             {
