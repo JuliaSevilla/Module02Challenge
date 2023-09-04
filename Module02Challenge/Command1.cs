@@ -223,7 +223,6 @@ namespace Module02Challenge
         }
 
 
-
         public static String GetMethod()
         {
             var method = MethodBase.GetCurrentMethod().DeclaringType?.FullName;
