@@ -1,11 +1,20 @@
+#region Namespaces
+using Autodesk.Revit.ApplicationServices;
 using Autodesk.Revit.Attributes;
+using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Mechanical;
 using Autodesk.Revit.DB.Plumbing;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
+using Autodesk.Revit.UI.Selection;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Net;
 using System.Reflection;
 using System;
+
+#endregion
 
 namespace Module02Challenge
 {
@@ -67,7 +76,6 @@ namespace Module02Challenge
             MEPSystemType pipeSystemType = GetPipeSystemType(doc, "Domestic Hot Water");
             //method to get level
             Level myLevel = GetLevelByName(doc, "Level 1");
-
 
             //start transaction
             using (Transaction t = new Transaction(doc))
